@@ -81,7 +81,26 @@ gh repo create unau-mak-chapter --private --source=. --push
    terminal features, or via `vercel env pull` + the commands above.)
 6. Redeploy (or it will already be live) — visit your `*.vercel.app` URL.
 
-## 5. After deploying
+## 5. Email confirmations
+
+Signup and project registration both try to send a confirmation email using
+[Resend](https://resend.com). This is **optional** — if `RESEND_API_KEY` isn't
+set, the app still works normally, it just skips sending the email and logs a
+note to the server console instead.
+
+To turn it on:
+
+1. Create a free Resend account and grab an API key from the dashboard.
+2. Add `RESEND_API_KEY` as an environment variable, locally in `.env` and on
+   Vercel (Settings → Environment Variables).
+3. By default, emails send from `onboarding@resend.dev`, which works
+   immediately with no setup but looks less official. To send from your own
+   address (e.g. `no-reply@unaumak.org`), verify your domain in Resend
+   (Domains → Add Domain, then add the DNS records it gives you), then set
+   `MAIL_FROM="UNAU Mak Chapter <no-reply@unaumak.org>"`.
+4. Redeploy. New signups and registrations will now receive an email.
+
+## 6. After deploying
 
 - Log in at `/admin/login` with the admin accounts you seeded, and change the passwords by re-running
   the seed with new `ADMIN1_PASSWORD` / `ADMIN2_PASSWORD` values (it upserts by email, so it updates the
