@@ -37,6 +37,29 @@ export async function listMembers() {
   return prisma.member.findMany({ orderBy: { createdAt: "desc" } });
 }
 
+export async function updateMember(
+  id: string,
+  input: { fullName: string; email: string; programme?: string; yearOfStudy?: string; sdgs: number[] }
+) {
+  const existing = await prisma.member.findFirst({ where: { email: input.email, NOT: { id } } });
+  if (existing) throw new Error("Another member already uses that email.");
+
+  return prisma.member.update({
+    where: { id },
+    data: {
+      fullName: input.fullName,
+      email: input.email,
+      programme: input.programme || null,
+      yearOfStudy: input.yearOfStudy || null,
+      sdgs: input.sdgs,
+    },
+  });
+}
+
+export async function deleteMember(id: string) {
+  return prisma.member.delete({ where: { id } });
+}
+
 export async function memberStats() {
   const total = await prisma.member.count();
   const members = await prisma.member.findMany({ select: { sdgs: true } });

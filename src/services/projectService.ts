@@ -91,9 +91,11 @@ export async function registerForProject(slug: string, data: Record<string, stri
   const project = await prisma.project.findUnique({ where: { slug } });
   if (!project) throw new Error("Project not found");
 
+  const submittedEmail = Object.entries(data).find(([key]) => key.trim().toLowerCase() === "email")?.[1];
+  const email = (memberEmail || submittedEmail || "").trim().toLowerCase();
   let memberId: string | undefined;
-  if (memberEmail) {
-    const member = await prisma.member.findUnique({ where: { email: memberEmail } });
+  if (email) {
+    const member = await prisma.member.findUnique({ where: { email } });
     if (member) memberId = member.id;
   }
 
@@ -103,9 +105,35 @@ export async function registerForProject(slug: string, data: Record<string, stri
 }
 
 export async function listRegistrations(projectId: string) {
-  return prisma.projectRegistration.findMany({
+  const registrations = await prisma.projectRegistration.findMany({
     where: { projectId },
     orderBy: { createdAt: "desc" },
     include: { member: true },
   });
+
+  const unlinkedEmails = registrations
+    .filter((registration) => !registration.member)
+    .map((registration) => {
+      const data = registration.data as Record<string, unknown>;
+      return Object.entries(data).find(([key]) => key.trim().toLowerCase() === "email")?.[1];
+    })
+    .filter((email): email is string => typeof email === "string" && email.trim().length > 0)
+    .map((email) => email.trim().toLowerCase());
+
+  if (unlinkedEmails.length === 0) return registrations;
+
+  const members = await prisma.member.findMany({ where: { email: { in: unlinkedEmails } } });
+  const membersByEmail = new Map(members.map((member) => [member.email.toLowerCase(), member]));
+
+  return registrations.map((registration) => {
+    if (registration.member) return registration;
+    const data = registration.data as Record<string, unknown>;
+    const email = Object.entries(data).find(([key]) => key.trim().toLowerCase() === "email")?.[1];
+    const member = typeof email === "string" ? membersByEmail.get(email.trim().toLowerCase()) : undefined;
+    return member ? { ...registration, member } : registration;
+  });
+}
+
+export async function deleteRegistration(id: string) {
+  return prisma.projectRegistration.delete({ where: { id } });
 }

@@ -53,6 +53,7 @@ export async function createFooterLinkAction(formData: FormData) {
   await createFooterLink({
     label: String(formData.get("label") || ""),
     value: String(formData.get("value") || ""),
+    icon: String(formData.get("icon") || "") || undefined,
   });
   revalidatePath("/admin/home");
   revalidatePath("/");
@@ -63,6 +64,7 @@ export async function updateFooterLinkAction(id: string, formData: FormData) {
   await updateFooterLink(id, {
     label: String(formData.get("label") || ""),
     value: String(formData.get("value") || ""),
+    icon: String(formData.get("icon") || "") || undefined,
   });
   revalidatePath("/admin/home");
   revalidatePath("/");

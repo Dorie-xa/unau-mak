@@ -18,12 +18,13 @@ export default function ProjectRegisterForm({ slug, fields }: { slug: string; fi
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setPending(true);
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const result = await registerForProjectAction(slug, formData);
     setPending(false);
     show(result.message, result.ok);
-    if (result.ok) e.currentTarget.reset();
+    if (result.ok) form.reset();
   }
 
   return (

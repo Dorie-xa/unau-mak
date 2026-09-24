@@ -26,12 +26,12 @@ export async function listFooterLinks() {
   return prisma.footerLink.findMany({ orderBy: { position: "asc" } });
 }
 
-export async function createFooterLink(input: { label: string; value: string }) {
+export async function createFooterLink(input: { label: string; value: string; icon?: string }) {
   const count = await prisma.footerLink.count();
   return prisma.footerLink.create({ data: { ...input, position: count } });
 }
 
-export async function updateFooterLink(id: string, input: { label: string; value: string }) {
+export async function updateFooterLink(id: string, input: { label: string; value: string; icon?: string }) {
   return prisma.footerLink.update({ where: { id }, data: input });
 }
 

@@ -55,6 +55,7 @@ model FooterLink {
   id       String @id @default(cuid())
   label    String
   value    String
+  icon     String?
   position Int    @default(0)
 }
 

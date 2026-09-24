@@ -11,7 +11,8 @@ export default function SignupForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     if (formData.getAll("sdgs").length < 3) {
       show("Please select at least 3 SDGs.", false);
       return;
@@ -20,7 +21,7 @@ export default function SignupForm() {
     const result = await signupAction(formData);
     setPending(false);
     show(result.message, result.ok);
-    if (result.ok) e.currentTarget.reset();
+    if (result.ok) form.reset();
   }
 
   return (
@@ -29,16 +30,8 @@ export default function SignupForm() {
       <p>Join UNAU Mak Chapter in a minute. Pick the SDGs closest to your heart — you can update these anytime.</p>
       <div className="card">
         <form onSubmit={handleSubmit}>
-          <div className="grid2">
-            <div>
-              <label>Full name</label>
-              <input name="fullName" placeholder="e.g. Aisha Nakato" required />
-            </div>
-            <div>
-              <label>Student number</label>
-              <input name="studentNumber" placeholder="e.g. 22/U/1234" />
-            </div>
-          </div>
+          <label>Full name</label>
+          <input name="fullName" placeholder="e.g. Aisha Nakato" required />
           <label>University email</label>
           <input type="email" name="email" placeholder="you@stud.mak.ac.ug" required />
           <div className="grid2">

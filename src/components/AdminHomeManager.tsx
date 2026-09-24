@@ -11,7 +11,7 @@ import {
 } from "@/actions/adminSiteActions";
 
 type Card = { id: string; icon: string | null; imageUrl: string | null; title: string; description: string };
-type Link = { id: string; label: string; value: string };
+type Link = { id: string; label: string; value: string; icon: string | null };
 
 async function uploadImage(file: File): Promise<string> {
   const fd = new FormData();
@@ -112,7 +112,7 @@ export default function AdminHomeManager({
         {links.map((l) => (
           <div className="crud-row" key={l.id}>
             <div className="meta">
-              <b>{l.label}</b>
+              <b><span className="footer-link-icon">{l.icon || "•"}</span>{l.label}</b>
               <span>{l.value}</span>
             </div>
             <div>
@@ -128,6 +128,16 @@ export default function AdminHomeManager({
       </div>
       <div className="add-card-form">
         <form action={(fd) => startTransition(() => handleAddLink(fd))}>
+          <label>Icon</label>
+          <select name="icon" defaultValue="✉️">
+            <option value="✉️">✉️ Email</option>
+            <option value="📍">📍 Location</option>
+            <option value="📷">📷 Instagram / social</option>
+            <option value="𝕏">𝕏 X / Twitter</option>
+            <option value="💬">💬 WhatsApp / chat</option>
+            <option value="🔗">🔗 Website / link</option>
+            <option value="📞">📞 Phone</option>
+          </select>
           <label>Label</label>
           <input name="label" placeholder="e.g. WhatsApp" required />
           <label>Value / URL</label>
