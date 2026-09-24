@@ -13,12 +13,17 @@ export default function MemberSigninForm({ initialEmail = "", redirectTo = "/" }
     event.preventDefault();
     setPending(true);
     setError(null);
-    const result = await memberLoginAction(new FormData(event.currentTarget));
-    if (result.ok) {
-      router.push(redirectTo);
-      router.refresh();
-    } else {
-      setError(result.message);
+    try {
+      const result = await memberLoginAction(new FormData(event.currentTarget));
+      if (result.ok) {
+        router.push(redirectTo);
+        router.refresh();
+      } else {
+        setError(result.message);
+        setPending(false);
+      }
+    } catch (err) {
+      setError("Something went wrong signing in. Please try again.");
       setPending(false);
     }
   }
