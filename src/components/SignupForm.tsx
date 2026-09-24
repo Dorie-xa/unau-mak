@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import SdgPicker from "@/components/SdgPicker";
 import { useToast } from "@/components/Toast";
 import { signupAction } from "@/actions/publicActions";
 
 export default function SignupForm() {
+  const router = useRouter();
   const { show } = useToast();
   const [pending, setPending] = useState(false);
 
@@ -21,7 +23,9 @@ export default function SignupForm() {
     const result = await signupAction(formData);
     setPending(false);
     show(result.message, result.ok);
-    if (result.ok) form.reset();
+    if (result.ok) {
+      router.push(`/signin?email=${encodeURIComponent(String(formData.get("email") || ""))}`);
+    }
   }
 
   return (

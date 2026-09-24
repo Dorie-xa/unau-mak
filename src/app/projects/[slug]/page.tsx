@@ -1,10 +1,15 @@
 import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProjectRegisterForm from "@/components/ProjectRegisterForm";
 import { getProjectBySlug } from "@/services/projectService";
+import { getMemberSession } from "@/lib/auth";
 
 export default async function ProjectDetailPage({ params }: { params: { slug: string } }) {
+  const member = await getMemberSession();
+  if (!member) redirect(`/signin?redirect=/projects/${params.slug}`);
+
   const project = await getProjectBySlug(params.slug);
   if (!project) notFound();
 

@@ -33,6 +33,14 @@ export async function signupMember(input: SignupInput) {
   });
 }
 
+export async function verifyMemberLogin(email: string, password: string) {
+  const member = await prisma.member.findUnique({ where: { email: email.trim().toLowerCase() } });
+  if (!member) return null;
+  const passwordMatches = await bcrypt.compare(password, member.passwordHash);
+  if (!passwordMatches) return null;
+  return { memberId: member.id, email: member.email, name: member.fullName };
+}
+
 export async function listMembers() {
   return prisma.member.findMany({ orderBy: { createdAt: "desc" } });
 }

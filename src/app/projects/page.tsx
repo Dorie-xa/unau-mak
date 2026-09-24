@@ -2,6 +2,8 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { listProjects } from "@/services/projectService";
+import { getMemberSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 const statusLabel: Record<string, { text: string; cls: string }> = {
   OPEN: { text: "Open for registration", cls: "open" },
@@ -10,6 +12,9 @@ const statusLabel: Record<string, { text: string; cls: string }> = {
 };
 
 export default async function ProjectsPage() {
+  const member = await getMemberSession();
+  if (!member) redirect("/signin?redirect=/projects");
+
   const projects = await listProjects();
 
   return (

@@ -1,7 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getMemberSession } from "@/lib/auth";
+import MemberAccountHeader from "@/components/MemberAccountHeader";
 
-export default function Header() {
+export default async function Header() {
+  const member = await getMemberSession();
+
   return (
     <header className="site-header">
       <div className="brand">
@@ -11,11 +15,16 @@ export default function Header() {
           <span>United Nations Association of Uganda</span>
         </div>
       </div>
+      {member && (
+        <MemberAccountHeader name={member.name} />
+      )}
       <nav>
         <Link href="/">Home</Link>
-        <Link href="/projects">Projects</Link>
-        <Link href="/signup">Sign Up</Link>
-        <Link href="/admin/login">Admin</Link>
+        {member && <Link href="/projects">Projects</Link>}
+        {member && <Link href="/about">About UNAU</Link>}
+        {!member && <Link href="/signup">Sign Up</Link>}
+        {!member && <Link href="/signin">Sign in</Link>}
+        {!member && <Link href="/admin/login">Admin</Link>}
       </nav>
     </header>
   );

@@ -17,7 +17,7 @@ export async function adminLoginAction(formData: FormData): Promise<{ ok: boolea
 
 export async function adminLogoutAction() {
   clearAdminSession();
-  redirect("/admin/login");
+  redirect("/");
 }
 
 export async function changeAdminPasswordAction(formData: FormData): Promise<{ ok: boolean; message: string }> {

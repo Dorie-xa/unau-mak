@@ -5,6 +5,15 @@ import { NextRequest, NextResponse } from "next/server";
 // logged-out visitors from loading the admin shell at all.
 export function middleware(req: NextRequest) {
   const isLoginPage = req.nextUrl.pathname === "/admin/login";
+  if (req.nextUrl.pathname.startsWith("/projects")) {
+    if (!req.cookies.has("unau_member_session")) {
+      const signInUrl = new URL("/signin", req.url);
+      signInUrl.searchParams.set("redirect", req.nextUrl.pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+    return NextResponse.next();
+  }
+
   const hasSession = req.cookies.has("unau_admin_session");
 
   if (!isLoginPage && !hasSession) {
@@ -14,5 +23,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/projects/:path*"],
 };

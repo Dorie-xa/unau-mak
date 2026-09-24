@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { signupMember } from "@/services/memberService";
 import { registerForProject } from "@/services/projectService";
+import { getMemberSession } from "@/lib/auth";
 
 export type ActionResult = { ok: boolean; message: string };
 
@@ -28,13 +29,15 @@ export async function signupAction(formData: FormData): Promise<ActionResult> {
 
 export async function registerForProjectAction(slug: string, formData: FormData): Promise<ActionResult> {
   try {
+    const memberSession = await getMemberSession();
+    if (!memberSession) return { ok: false, message: "Please sign in as a member first." };
+
     const data: Record<string, string> = {};
     for (const [key, value] of formData.entries()) {
       if (key === "memberEmail") continue;
       data[key] = String(value);
     }
-    const memberEmail = String(formData.get("memberEmail") || "") || undefined;
-    await registerForProject(slug, data, memberEmail);
+    await registerForProject(slug, data, memberSession.email);
     revalidatePath(`/projects/${slug}`);
 
     return { ok: true, message: "Registered" };
